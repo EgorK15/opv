@@ -1,0 +1,8 @@
+# build artifacts (reproducible)
+pdf_build/node_modules/
+pdf_build/output.html
+pdf_build/*.png
+
+# caches / temp
+.npm/
+*.tmp
