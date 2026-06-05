@@ -6,6 +6,10 @@ const MarkdownIt = require("markdown-it");
 let mdKatex = require("@vscode/markdown-it-katex");
 mdKatex = mdKatex.default || mdKatex;
 
+// --- anchor plugin: generates id= on headings so TOC links work in PDF ---
+let mdAnchor = require("markdown-it-anchor");
+mdAnchor = mdAnchor.default || mdAnchor;
+
 const ROOT = "D:/pycharm_projects_d/opv";
 const SRC = path.join(ROOT, "Ответы.md");
 const OUT_HTML = path.join(ROOT, "pdf_build", "output.html");
@@ -13,6 +17,15 @@ const KATEX_CSS = path.join(ROOT, "pdf_build", "node_modules", "katex", "dist", 
 
 const md = new MarkdownIt({ html: true, linkify: false, typographer: false });
 md.use(mdKatex, { throwOnError: false, errorColor: "#cc0000" });
+// slugify matches GitHub-flavoured anchor style (lowercase, strip punctuation, spaces→hyphens)
+md.use(mdAnchor, {
+  slugify: s => s.toLowerCase()
+                 .replace(/[^\w\s\-]/gu, "")
+                 .trim()
+                 .replace(/\s+/g, "-")
+                 .replace(/-+/g, "-"),
+  tabIndex: false,
+});
 
 let text = fs.readFileSync(SRC, "utf8");
 let body = md.render(text);
